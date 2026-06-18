@@ -1,9 +1,13 @@
 export type PacketStatus = "draft" | "reviewing" | "ready" | "sent";
 
+// 한 회사 공고에 지원하기 위한 자료, 저장소, 메모, 보완 작업을 묶은 단위
 export type ApplicationPacket = {
+    // 한 회사 공고에 지원하기 위한 준비 묶음의 고유 ID
     id: string;
+    // 지원할 회사 이름
     companyName: string;
     jobTitle: string;
+    // 지원할 포지션 이름
     jobPostingUrl?: string;
     jobPostingText: string;
     status: PacketStatus;

@@ -1,9 +1,15 @@
-import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
+import { useEffect } from "react";
+import { fetchGitHubRepoSummary } from "./features/repos/fetchGitHubRepoSummary";
 
 function App() {
-    const result = parseGitHubRepoUrl("https://github.com/Jinhani/RepoFit-Packet");
+    useEffect(() => {
+        async function loadRepo() {
+            const repo = await fetchGitHubRepoSummary("facebook", "react");
+            console.log(repo);
+        }
 
-    console.log(result);
+        loadRepo();
+    }, []);
 
     return <div>RepoFit Packet</div>;
 }

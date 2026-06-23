@@ -37,3 +37,9 @@ export type SkillMatch = {
     evidence: string[];
     recommendation?: string;
 };
+
+export type PackageJsonInfo = {
+    dependencies: string[];
+    devDependencies: string[];
+    scripts: string[];
+};

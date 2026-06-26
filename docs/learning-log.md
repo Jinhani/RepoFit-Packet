@@ -1,0 +1,2 @@
+- `??`, `Set<string>`, `Boolean(...trim())`, `Object.keys()`를 RepoFit Packet 코드에서 직접 확인했다.
+- `dependencies`와 `devDependencies`를 합쳐 반복문으로 기술 후보를 검사하는 흐름을 이해했다.

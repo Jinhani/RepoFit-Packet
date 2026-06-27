@@ -1,5 +1,7 @@
 import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
 import type { GitHubRepoSummary, PackageJsonInfo } from "./types/repo";
+import type { JobSkillRequirement } from "./types/job";
+import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
 
 function App() {
     const repoSummary: GitHubRepoSummary = {
@@ -21,6 +23,14 @@ function App() {
     };
 
     const evidence = buildRepoEvidence(repoSummary, "# Demo README", packageInfo);
+    const requirements: JobSkillRequirement[] = [
+        { skill: "React", importance: "required", sourceText: "React 사용 경험" },
+        { skill: "Testing", importance: "preferred", sourceText: "테스트 코드 작성 경험" },
+    ] as const;
+
+    const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
+
+    console.log(matches);
 
     console.log(evidence);
 

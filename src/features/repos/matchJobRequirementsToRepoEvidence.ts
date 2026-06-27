@@ -1,5 +1,5 @@
 import type { JobSkillRequirement } from "../../types/job";
-import type { RepoEvidence, SkillMatchStatus } from "../../types/repo";
+import type { RepoEvidence, SkillMatch } from "../../types/repo";
 
 export function matchJobRequirementsToRepoEvidence(
     requirements: JobSkillRequirement[],
@@ -7,7 +7,7 @@ export function matchJobRequirementsToRepoEvidence(
 ): SkillMatch[] {
     return requirements.map((requirement) => ({
         requirement,
-        status: repoEvidence.detectedSkills.includes(requirement.skillName) ? "matched" : "missing",
+        status: repoEvidence.detectedSkills.includes(requirement.skill) ? "matched" : "missing",
         evidence: [],
     }));
 }

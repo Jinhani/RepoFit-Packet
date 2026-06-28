@@ -34,7 +34,18 @@ function App() {
 
     console.log(evidence);
 
-    return <div>RepoFit Packet</div>;
-}
+  return (
+    <div>
+        <h1>RepoFit Packet</h1>
+
+        <ul>
+            {matches.map((match) => (
+                <li key={match.requirement.skill}>
+                    {match.requirement.skill} - {match.status}
+                </li>
+            ))}
+        </ul>
+    </div>
+);
 
 export default App;

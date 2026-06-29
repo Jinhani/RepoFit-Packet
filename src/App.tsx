@@ -34,18 +34,20 @@ function App() {
 
     console.log(evidence);
 
-  return (
-    <div>
-        <h1>RepoFit Packet</h1>
+    return (
+        <div>
+            <h1>RepoFit Packet</h1>
 
-        <ul>
-            {matches.map((match) => (
-                <li key={match.requirement.skill}>
-                    {match.requirement.skill} - {match.status}
-                </li>
-            ))}
-        </ul>
-    </div>
-);
+            <ul>
+                {matches.map((match) => (
+                    <li key={match.requirement.skill}>
+                        {match.requirement.skill} - {match.status}
+                        {match.status === "missing" ? "/ 보완 필요" : ""}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
 
 export default App;

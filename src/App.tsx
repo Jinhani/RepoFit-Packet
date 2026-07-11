@@ -2,6 +2,7 @@ import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
 import type { GitHubRepoSummary, PackageJsonInfo } from "./types/repo";
 import type { JobSkillRequirement } from "./types/job";
 import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
+import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
 
 function App() {
     const repoSummary: GitHubRepoSummary = {
@@ -29,10 +30,12 @@ function App() {
     ] as const;
 
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
+    const remediationTasks = buildRemediationTasksFromMatches(matches);
 
     console.log(matches);
 
     console.log(evidence);
+    console.log(remediationTasks);
 
     return (
         <div>

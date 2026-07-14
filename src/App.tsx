@@ -3,6 +3,7 @@ import type { GitHubRepoSummary, PackageJsonInfo } from "./types/repo";
 import type { JobSkillRequirement } from "./types/job";
 import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
 import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
+import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
 
 function App() {
     const repoSummary: GitHubRepoSummary = {
@@ -31,11 +32,17 @@ function App() {
 
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
+    const applicationPacket = buildApplicationPacket(
+        "데모 회사",
+        "React와 테스트 코드 작성 경험 필수",
+        remediationTasks,
+    );
 
     console.log(matches);
 
     console.log(evidence);
     console.log(remediationTasks);
+    console.log(applicationPacket);
 
     return (
         <div>

@@ -7,7 +7,7 @@ function mapPackageNameToSkill(packageName: string): string | null {
         react: "React",
         typescript: "TypeScript",
         vite: "Vite",
-        vitest: "Vitest",
+        vitest: "Testing",
         zustand: "Zustand",
         zod: "Zod",
         "@supabase/supabase-js": "Supabase",

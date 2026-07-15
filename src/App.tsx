@@ -1,9 +1,9 @@
 import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
 import type { GitHubRepoSummary, PackageJsonInfo } from "./types/repo";
-import type { JobSkillRequirement } from "./types/job";
 import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
 import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
+import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
 
 function App() {
     const repoSummary: GitHubRepoSummary = {
@@ -24,26 +24,18 @@ function App() {
         scripts: ["dev", "build", "test"],
     };
 
-    const evidence = buildRepoEvidence(repoSummary, "# Demo README", packageInfo);
-    const requirements: JobSkillRequirement[] = [
-        { skill: "React", importance: "required", sourceText: "React 사용 경험" },
-        { skill: "Testing", importance: "preferred", sourceText: "테스트 코드 작성 경험" },
-    ] as const;
+    const jobPostingText = "React와 테스트 코드 작성 경험 필수";
 
+    const evidence = buildRepoEvidence(repoSummary, "# Demo README", packageInfo);
+    const requirements = extractJobSkillRequirements(jobPostingText);
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
-    const applicationPacket = buildApplicationPacket(
-        "데모 회사",
-        "React와 테스트 코드 작성 경험 필수",
-        remediationTasks,
-    );
-
+    const applicationPacket = buildApplicationPacket("데모 회사", jobPostingText, remediationTasks);
+    console.log(requirements);
     console.log(matches);
-
     console.log(evidence);
     console.log(remediationTasks);
     console.log(applicationPacket);
-
     return (
         <div>
             <h1>RepoFit Packet</h1>

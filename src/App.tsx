@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
 import type { GitHubRepoSummary, PackageJsonInfo } from "./types/repo";
 import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
@@ -6,6 +8,8 @@ import { buildApplicationPacket } from "./features/packets/buildApplicationPacke
 import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
 
 function App() {
+    const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
+    const [companyName, setCompanyName] = useState("데모 회사");
     const repoSummary: GitHubRepoSummary = {
         id: 1,
         owner: "demo",
@@ -24,22 +28,36 @@ function App() {
         scripts: ["dev", "build", "test"],
     };
 
-    const jobPostingText = "React와 테스트 코드 작성 경험 필수";
-
     const evidence = buildRepoEvidence(repoSummary, "# Demo README", packageInfo);
     const requirements = extractJobSkillRequirements(jobPostingText);
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
-    const applicationPacket = buildApplicationPacket("데모 회사", jobPostingText, remediationTasks);
+    function handleBuildPacket() {
+        const applicationPacket = buildApplicationPacket(companyName, jobPostingText, remediationTasks);
+
+        console.log(applicationPacket);
+    }
+
     console.log(requirements);
     console.log(matches);
     console.log(evidence);
     console.log(remediationTasks);
-    console.log(applicationPacket);
+
     return (
         <div>
             <h1>RepoFit Packet</h1>
 
+            <label htmlFor="job-posting">채용공고</label>
+            <textarea
+                id="job-posting"
+                value={jobPostingText}
+                onChange={(event) => setJobPostingText(event.target.value)}
+            />
+            <label htmlFor="company-name">회사명</label>
+            <input id="company-name" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+            <button type="button" onClick={handleBuildPacket}>
+                패킷 생성
+            </button>
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>
@@ -51,5 +69,4 @@ function App() {
         </div>
     );
 }
-
 export default App;

@@ -6,10 +6,12 @@ import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobReq
 import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
 import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
+import type { ApplicationPacket } from "./types/packet";
 
 function App() {
     const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
     const [companyName, setCompanyName] = useState("데모 회사");
+    const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
     const repoSummary: GitHubRepoSummary = {
         id: 1,
         owner: "demo",
@@ -33,15 +35,10 @@ function App() {
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
     function handleBuildPacket() {
-        const applicationPacket = buildApplicationPacket(companyName, jobPostingText, remediationTasks);
+        const packet = buildApplicationPacket(companyName, jobPostingText, remediationTasks);
 
-        console.log(applicationPacket);
+        setApplicationPacket(packet);
     }
-
-    console.log(requirements);
-    console.log(matches);
-    console.log(evidence);
-    console.log(remediationTasks);
 
     return (
         <div>
@@ -58,6 +55,13 @@ function App() {
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
             </button>
+            {applicationPacket && (
+                <section>
+                    <h2>생성된 패킷</h2>
+                    <p>회사명: {applicationPacket.companyName}</p>
+                    <p>상태: {applicationPacket.status}</p>
+                </section>
+            )}
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>

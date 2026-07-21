@@ -7,8 +7,10 @@ import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediat
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
 import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
 import type { ApplicationPacket } from "./types/packet";
+type ApplicationPacketResultProps = {
+    packet: ApplicationPacket;
+};
 
-function App() {
     const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
     const [companyName, setCompanyName] = useState("데모 회사");
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
@@ -62,6 +64,7 @@ function App() {
                     <p>상태: {applicationPacket.status}</p>
                 </section>
             )}
+        
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>

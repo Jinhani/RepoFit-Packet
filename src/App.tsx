@@ -10,10 +10,11 @@ import type { ApplicationPacket } from "./types/packet";
 
 function App() {
     const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
-
     const [companyName, setCompanyName] = useState("데모 회사");
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
     const [validationMessage, setValidationMessage] = useState("");
+    const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
+
     const repoSummary: GitHubRepoSummary = {
         id: 1,
         owner: "demo",
@@ -37,15 +38,15 @@ function App() {
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
     function handleBuildPacket() {
-        if (companyName.trim() === "" || jobPostingText.trim() === "") {
-            setValidationMessage("회사명과 채용공고를 모두 입력해주세요.");
+        if (companyName.trim() === "" || jobTitle.trim() === "" || jobPostingText.trim() === "") {
+            setValidationMessage("회사명, 직무명, 채용공고를 모두 입력해주세요.");
             setApplicationPacket(null);
             return;
         }
 
         setValidationMessage("");
 
-        const packet = buildApplicationPacket(companyName, jobPostingText, remediationTasks);
+        const packet = buildApplicationPacket(companyName, jobTitle, jobPostingText, remediationTasks);
 
         setApplicationPacket(packet);
     }
@@ -55,6 +56,9 @@ function App() {
             <h1>RepoFit Packet</h1>
 
             <label htmlFor="job-posting">채용공고</label>
+            <label htmlFor="job-title">직무명</label>
+            <label htmlFor="job-title">직무명</label>
+            <input id="job-title" value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} />
             <textarea
                 id="job-posting"
                 value={jobPostingText}

@@ -2,6 +2,7 @@ import type { ApplicationPacket, RemediationTask } from "../../types/packet";
 
 export function buildApplicationPacket(
     companyName: string,
+    jobTitle: string,
     jobPostingText: string,
     remediationTasks: RemediationTask[],
 ): ApplicationPacket {
@@ -10,7 +11,7 @@ export function buildApplicationPacket(
     return {
         id: crypto.randomUUID(),
         companyName,
-        jobTitle: "",
+        jobTitle,
         jobPostingText,
         status: "draft",
         repoUrls: [],

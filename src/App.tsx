@@ -13,6 +13,7 @@ function App() {
 
     const [companyName, setCompanyName] = useState("데모 회사");
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
+    const [validationMessage, setValidationMessage] = useState("");
     const repoSummary: GitHubRepoSummary = {
         id: 1,
         owner: "demo",
@@ -36,6 +37,14 @@ function App() {
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
     function handleBuildPacket() {
+        if (companyName.trim() === "" || jobPostingText.trim() === "") {
+            setValidationMessage("회사명과 채용공고를 모두 입력해주세요.");
+            setApplicationPacket(null);
+            return;
+        }
+
+        setValidationMessage("");
+
         const packet = buildApplicationPacket(companyName, jobPostingText, remediationTasks);
 
         setApplicationPacket(packet);
@@ -56,6 +65,8 @@ function App() {
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
             </button>
+
+            {validationMessage && <p>{validationMessage}</p>}
             {applicationPacket && <ApplicationPacketResult packet={applicationPacket} />}
 
             <ul>

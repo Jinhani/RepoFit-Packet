@@ -14,6 +14,7 @@ function App() {
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
     const [validationMessage, setValidationMessage] = useState("");
     const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
+    const [repoUrl, setRepoUrl] = useState("https://github.com/demo/repo");
 
     const repoSummary: GitHubRepoSummary = {
         id: 1,
@@ -38,7 +39,12 @@ function App() {
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
     function handleBuildPacket() {
-        if (companyName.trim() === "" || jobTitle.trim() === "" || jobPostingText.trim() === "") {
+        if (
+            companyName.trim() === "" ||
+            jobTitle.trim() === "" ||
+            jobPostingText.trim() === "" ||
+            repoUrl.trim() === ""
+        ) {
             setValidationMessage("회사명, 직무명, 채용공고를 모두 입력해주세요.");
             setApplicationPacket(null);
             return;
@@ -46,15 +52,20 @@ function App() {
 
         setValidationMessage("");
 
-        const packet = buildApplicationPacket(companyName, jobTitle, jobPostingText, remediationTasks);
-
+        const packet = buildApplicationPacket(
+            companyName,
+            jobTitle,
+            jobPostingText,
+            [repoUrl.trim()],
+            remediationTasks,
+        );
+        console.log("생성된 패킷:", packet);
         setApplicationPacket(packet);
     }
 
     return (
         <div>
             <h1>RepoFit Packet</h1>
-
             <label htmlFor="job-posting">채용공고</label>
             <label htmlFor="job-title">직무명</label>
             <label htmlFor="job-title">직무명</label>
@@ -64,15 +75,22 @@ function App() {
                 value={jobPostingText}
                 onChange={(event) => setJobPostingText(event.target.value)}
             />
+            <label htmlFor="repo-url">GitHub 저장소 URL</label>
+            <input
+                id="repo-url"
+                value={repoUrl}
+                onChange={(event) => {
+                    console.log("현재 입력값:", event.target.value);
+                    setRepoUrl(event.target.value);
+                }}
+            />
             <label htmlFor="company-name">회사명</label>
             <input id="company-name" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
             </button>
-
             {validationMessage && <p>{validationMessage}</p>}
             {applicationPacket && <ApplicationPacketResult packet={applicationPacket} />}
-
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>

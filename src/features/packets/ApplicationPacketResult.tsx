@@ -18,10 +18,11 @@ export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
                 <p>보완 작업이 없습니다.</p>
             ) : (
                 <ul>
-                    {props.packet.remediationTasks.map((task) => (
-                        <li key={task.id}>
-                            {task.title} - {task.status}
-                            <p>{task.description}</p>
+                    {props.packet.repoUrls.map((repoUrl) => (
+                        <li key={repoUrl}>
+                            <a href={repoUrl} target="_blank" rel="noreferrer">
+                                {repoUrl}
+                            </a>
                         </li>
                     ))}
                 </ul>

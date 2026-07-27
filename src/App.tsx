@@ -11,7 +11,16 @@ import type { ApplicationPacket } from "./types/packet";
 function App() {
     const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
     const [companyName, setCompanyName] = useState("데모 회사");
-    const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(null);
+    const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(() => {
+        const savedPacket = localStorage.getItem("repofit-application-packet");
+
+        if (savedPacket === null) {
+            return null;
+        }
+
+        return JSON.parse(savedPacket) as ApplicationPacket;
+    });
+    //useState가 초기화 함수를 한 번 실행하고, 저장값이 없으면 null, 있으면 JSON 문자열을 ApplicationPacket 객체로 복원해 초기값으로 사용한다.
     const [validationMessage, setValidationMessage] = useState("");
     const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
     const [repoUrl, setRepoUrl] = useState("https://github.com/demo/repo");
@@ -52,6 +61,11 @@ function App() {
 
         setValidationMessage("");
 
+        function handleClearPacket() {
+            setApplicationPacket(null);
+            localStorage.removeItem("repofit-application-packet");
+        }
+
         const packet = buildApplicationPacket(
             companyName,
             jobTitle,
@@ -61,6 +75,7 @@ function App() {
         );
         console.log("생성된 패킷:", packet);
         setApplicationPacket(packet);
+        localStorage.setItem("repofit-application-packet", JSON.stringify(packet));
     }
 
     return (
@@ -88,6 +103,9 @@ function App() {
             <input id="company-name" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
+            </button>
+            <button type="button" onClick={handleClearPacket}>
+                패킷 삭제
             </button>
             {validationMessage && <p>{validationMessage}</p>}
             {applicationPacket && <ApplicationPacketResult packet={applicationPacket} />}

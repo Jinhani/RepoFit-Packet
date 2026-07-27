@@ -54,17 +54,12 @@ function App() {
             jobPostingText.trim() === "" ||
             repoUrl.trim() === ""
         ) {
-            setValidationMessage("회사명, 직무명, 채용공고를 모두 입력해주세요.");
+            setValidationMessage("회사명, 직무명, 채용공고, 저장소 URL을 모두 입력해주세요.");
             setApplicationPacket(null);
             return;
         }
 
         setValidationMessage("");
-
-        function handleClearPacket() {
-            setApplicationPacket(null);
-            localStorage.removeItem("repofit-application-packet");
-        }
 
         const packet = buildApplicationPacket(
             companyName,
@@ -73,9 +68,16 @@ function App() {
             [repoUrl.trim()],
             remediationTasks,
         );
+
         console.log("생성된 패킷:", packet);
         setApplicationPacket(packet);
+
         localStorage.setItem("repofit-application-packet", JSON.stringify(packet));
+    }
+
+    function handleClearPacket() {
+        setApplicationPacket(null);
+        localStorage.removeItem("repofit-application-packet");
     }
 
     return (
@@ -83,7 +85,7 @@ function App() {
             <h1>RepoFit Packet</h1>
             <label htmlFor="job-posting">채용공고</label>
             <label htmlFor="job-title">직무명</label>
-            <label htmlFor="job-title">직무명</label>
+
             <input id="job-title" value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} />
             <textarea
                 id="job-posting"

@@ -79,7 +79,22 @@ function App() {
         setApplicationPacket(null);
         localStorage.removeItem("repofit-application-packet");
     }
+    function handleCompleteTask(taskId: string) {
+        if (applicationPacket === null) {
+            return;
+        }
 
+        const updatedTasks = applicationPacket.remediationTasks.map((task) =>
+            task.id === taskId
+                ? {
+                      ...task,
+                      status: "done" as const,
+                  }
+                : task,
+        );
+
+        console.log("변경된 작업 목록:", updatedTasks);
+    }
     return (
         <div>
             <h1>RepoFit Packet</h1>
@@ -110,7 +125,9 @@ function App() {
                 패킷 삭제
             </button>
             {validationMessage && <p>{validationMessage}</p>}
-            {applicationPacket && <ApplicationPacketResult packet={applicationPacket} />}
+            {applicationPacket && (
+                <ApplicationPacketResult packet={applicationPacket} onCompleteTask={handleCompleteTask} />
+            )}
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>

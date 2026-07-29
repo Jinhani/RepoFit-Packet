@@ -7,10 +7,17 @@ import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediat
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
 import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
 import type { ApplicationPacket } from "./types/packet";
+import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
+import { fetchGitHubRepoSummary } from "./features/repos/fetchGitHubRepoSummary";
 
 function App() {
     const [jobPostingText, setJobPostingText] = useState("React와 테스트 코드 작성 경험 필수");
     const [companyName, setCompanyName] = useState("데모 회사");
+    const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
+    const [repoUrl, setRepoUrl] = useState("https://github.com/demo/repo");
+    const [notes, setNotes] = useState("");
+    const [validationMessage, setValidationMessage] = useState("");
+
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(() => {
         const savedPacket = localStorage.getItem("repofit-application-packet");
 
@@ -20,11 +27,6 @@ function App() {
 
         return JSON.parse(savedPacket) as ApplicationPacket;
     });
-    //useState가 초기화 함수를 한 번 실행하고, 저장값이 없으면 null, 있으면 JSON 문자열을 ApplicationPacket 객체로 복원해 초기값으로 사용한다.
-    const [validationMessage, setValidationMessage] = useState("");
-    const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
-    const [repoUrl, setRepoUrl] = useState("https://github.com/demo/repo");
-    const [notes, setNotes] = useState("");
 
     const repoSummary: GitHubRepoSummary = {
         id: 1,
@@ -48,7 +50,8 @@ function App() {
     const requirements = extractJobSkillRequirements(jobPostingText);
     const matches = matchJobRequirementsToRepoEvidence(requirements, evidence);
     const remediationTasks = buildRemediationTasksFromMatches(matches);
-    function handleBuildPacket() {
+
+    async function handleBuildPacket() {
         if (
             companyName.trim() === "" ||
             jobTitle.trim() === "" ||
@@ -60,25 +63,47 @@ function App() {
             return;
         }
 
+        const parsedRepo = parseGitHubRepoUrl(repoUrl);
+
+        if (parsedRepo === null) {
+            setValidationMessage("올바른 GitHub 저장소 URL을 입력해주세요.");
+            setApplicationPacket(null);
+            return;
+        }
+
+        const fetchedRepoSummary = await fetchGitHubRepoSummary(parsedRepo.owner, parsedRepo.repo);
+
+        if (fetchedRepoSummary === null) {
+            setValidationMessage("GitHub 저장소 정보를 불러오지 못했습니다.");
+            setApplicationPacket(null);
+            return;
+        }
+
+        const normalizedRepoUrl = `https://github.com/${parsedRepo.fullName}`;
+
+        console.log("분석된 GitHub 주소:", parsedRepo);
+        console.log("정리된 GitHub 주소:", normalizedRepoUrl);
+
         setValidationMessage("");
 
         const packet = buildApplicationPacket(
             companyName,
             jobTitle,
             jobPostingText,
-            [repoUrl.trim()],
+            [normalizedRepoUrl],
             notes,
             remediationTasks,
         );
 
         console.log("생성된 패킷:", packet);
-        setApplicationPacket(packet);
 
+        setApplicationPacket(packet);
         localStorage.setItem("repofit-application-packet", JSON.stringify(packet));
     }
 
     function handleClearPacket() {
         setApplicationPacket(null);
+        setValidationMessage("");
         localStorage.removeItem("repofit-application-packet");
     }
 
@@ -103,56 +128,56 @@ function App() {
         };
 
         setApplicationPacket(updatedPacket);
-
         localStorage.setItem("repofit-application-packet", JSON.stringify(updatedPacket));
     }
 
     return (
         <div>
             <h1>RepoFit Packet</h1>
-            <label htmlFor="job-posting">채용공고</label>
-            <label htmlFor="job-title">직무명</label>
 
+            <label htmlFor="job-title">직무명</label>
             <input id="job-title" value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} />
+
+            <label htmlFor="job-posting">채용공고</label>
             <textarea
                 id="job-posting"
                 value={jobPostingText}
                 onChange={(event) => setJobPostingText(event.target.value)}
             />
+
             <label htmlFor="repo-url">GitHub 저장소 URL</label>
-            <input
-                id="repo-url"
-                value={repoUrl}
-                onChange={(event) => {
-                    console.log("현재 입력값:", event.target.value);
-                    setRepoUrl(event.target.value);
-                }}
-            />
+            <input id="repo-url" value={repoUrl} onChange={(event) => setRepoUrl(event.target.value)} />
+
             <label htmlFor="company-name">회사명</label>
-            <label htmlFor="packet-notes">지원 메모</label>
-            <textarea id="packet-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
             <input id="company-name" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
-            <label htmlFor="notes">비고</label>
-            <textarea id="notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
+
+            <label htmlFor="packet-notes">지원 메모</label>
+            <textarea id="packet-notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
+
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
             </button>
+
             <button type="button" onClick={handleClearPacket}>
                 패킷 삭제
             </button>
+
             {validationMessage && <p>{validationMessage}</p>}
+
             {applicationPacket && (
                 <ApplicationPacketResult packet={applicationPacket} onCompleteTask={handleCompleteTask} />
             )}
+
             <ul>
                 {matches.map((match) => (
                     <li key={match.requirement.skill}>
                         {match.requirement.skill} - {match.status}
-                        {match.status === "missing" ? "/ 보완 필요" : ""}
+                        {match.status === "missing" ? " / 보완 필요" : ""}
                     </li>
                 ))}
             </ul>
         </div>
     );
 }
+
 export default App;

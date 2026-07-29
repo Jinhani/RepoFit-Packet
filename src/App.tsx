@@ -79,6 +79,7 @@ function App() {
         setApplicationPacket(null);
         localStorage.removeItem("repofit-application-packet");
     }
+
     function handleCompleteTask(taskId: string) {
         if (applicationPacket === null) {
             return;
@@ -93,8 +94,17 @@ function App() {
                 : task,
         );
 
-        console.log("변경된 작업 목록:", updatedTasks);
+        const updatedPacket: ApplicationPacket = {
+            ...applicationPacket,
+            remediationTasks: updatedTasks,
+            updatedAt: new Date().toISOString(),
+        };
+
+        setApplicationPacket(updatedPacket);
+
+        localStorage.setItem("repofit-application-packet", JSON.stringify(updatedPacket));
     }
+
     return (
         <div>
             <h1>RepoFit Packet</h1>

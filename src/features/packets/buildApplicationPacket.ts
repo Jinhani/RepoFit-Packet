@@ -5,6 +5,7 @@ export function buildApplicationPacket(
     jobTitle: string,
     jobPostingText: string,
     repoUrls: string[],
+    notes: string,
     remediationTasks: RemediationTask[],
 ): ApplicationPacket {
     const now = new Date().toISOString();
@@ -17,7 +18,7 @@ export function buildApplicationPacket(
         status: "draft",
         repoUrls,
         attachments: [],
-        notes: "",
+        notes,
         checkItems: [],
         remediationTasks,
         createdAt: now,

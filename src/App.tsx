@@ -24,6 +24,7 @@ function App() {
     const [validationMessage, setValidationMessage] = useState("");
     const [jobTitle, setJobTitle] = useState("프론트엔드 개발자");
     const [repoUrl, setRepoUrl] = useState("https://github.com/demo/repo");
+    const [notes, setNotes] = useState("");
 
     const repoSummary: GitHubRepoSummary = {
         id: 1,
@@ -66,6 +67,7 @@ function App() {
             jobTitle,
             jobPostingText,
             [repoUrl.trim()],
+            notes,
             remediationTasks,
         );
 
@@ -127,7 +129,11 @@ function App() {
                 }}
             />
             <label htmlFor="company-name">회사명</label>
+            <label htmlFor="packet-notes">지원 메모</label>
+            <textarea id="packet-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
             <input id="company-name" value={companyName} onChange={(event) => setCompanyName(event.target.value)} />
+            <label htmlFor="notes">비고</label>
+            <textarea id="notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
             <button type="button" onClick={handleBuildPacket}>
                 패킷 생성
             </button>

@@ -14,7 +14,7 @@ export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
             <p>직무명: {props.packet.jobTitle}</p>
             <p>상태: {props.packet.status}</p>
             <p>공고 내용: {props.packet.jobPostingText}</p>
-
+            {props.packet.notes !== "" && <p>지원 메모: {props.packet.notes}</p>}
             <h3>GitHub 저장소</h3>
             <ul>
                 {props.packet.repoUrls.map((repoUrl) => (

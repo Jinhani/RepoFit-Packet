@@ -147,7 +147,7 @@ function App() {
         }
     }
 
-    function handleCompleteTask(taskId: string) {
+    function handleToggleTask(taskId: string) {
         if (applicationPacket === null) {
             return;
         }
@@ -156,7 +156,7 @@ function App() {
             task.id === taskId
                 ? {
                       ...task,
-                      status: "done" as const,
+                      status: task.status === "todo" ? ("done" as const) : ("todo" as const),
                   }
                 : task,
         );
@@ -170,7 +170,7 @@ function App() {
         setApplicationPacket(updatedPacket);
 
         if (!saveApplicationPacket(updatedPacket)) {
-            setValidationMessage("완료 상태는 변경됐지만 브라우저 저장에 실패했습니다.");
+            setValidationMessage("작업 상태는 변경됐지만 브라우저 저장에 실패했습니다.");
         }
     }
 
@@ -181,7 +181,6 @@ function App() {
 
         downloadApplicationPacketMarkdown(applicationPacket);
     }
-
     return (
         <div>
             <h1>RepoFit Packet</h1>
@@ -226,7 +225,7 @@ function App() {
 
             {applicationPacket && (
                 <>
-                    <ApplicationPacketResult packet={applicationPacket} onCompleteTask={handleCompleteTask} />
+                    <ApplicationPacketResult packet={applicationPacket} onToggleTask={handleToggleTask} />
 
                     <button type="button" onClick={handleDownloadMarkdown}>
                         Markdown 내보내기

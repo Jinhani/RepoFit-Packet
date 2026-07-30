@@ -2,7 +2,7 @@ import type { ApplicationPacket } from "../../types/packet";
 
 type ApplicationPacketResultProps = {
     packet: ApplicationPacket;
-    onCompleteTask: (taskId: string) => void;
+    onToggleTask: (taskId: string) => void;
 };
 
 export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
@@ -14,8 +14,11 @@ export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
             <p>직무명: {props.packet.jobTitle}</p>
             <p>상태: {props.packet.status}</p>
             <p>공고 내용: {props.packet.jobPostingText}</p>
+
             {props.packet.notes !== "" && <p>지원 메모: {props.packet.notes}</p>}
+
             <h3>GitHub 저장소</h3>
+
             <ul>
                 {props.packet.repoUrls.map((repoUrl) => (
                     <li key={repoUrl}>
@@ -36,8 +39,8 @@ export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
                         <li key={task.id}>
                             {task.title} - {task.status}
                             <p>{task.description}</p>
-                            <button type="button" onClick={() => props.onCompleteTask(task.id)}>
-                                완료
+                            <button type="button" onClick={() => props.onToggleTask(task.id)}>
+                                {task.status === "todo" ? "완료" : "되돌리기"}
                             </button>
                         </li>
                     ))}

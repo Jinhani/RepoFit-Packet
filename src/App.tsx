@@ -1,16 +1,17 @@
 import { useState, type FormEvent } from "react";
 import { ApplicationPacketResult } from "./features/packets/ApplicationPacketResult";
-import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
-import type { PackageJsonInfo, SkillMatch } from "./types/repo";
-import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
-import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
+import { downloadApplicationPacketMarkdown } from "./features/packets/downloadApplicationPacketMarkdown";
 import { extractJobSkillRequirements } from "./features/jobs/extractJobSkillRequirements";
-import type { ApplicationPacket } from "./types/packet";
-import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
-import { fetchGitHubRepoSummary } from "./features/repos/fetchGitHubRepoSummary";
-import { fetchGitHubReadmeText } from "./features/repos/fetchGitHubReadmeText";
+import { buildRemediationTasksFromMatches } from "./features/repos/buildRemediationTasksFromMatches";
+import { buildRepoEvidence } from "./features/repos/buildRepoEvidence";
 import { fetchGitHubPackageJson } from "./features/repos/fetchGitHubPackageJson";
+import { fetchGitHubReadmeText } from "./features/repos/fetchGitHubReadmeText";
+import { fetchGitHubRepoSummary } from "./features/repos/fetchGitHubRepoSummary";
+import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
+import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
+import type { ApplicationPacket } from "./types/packet";
+import type { PackageJsonInfo, SkillMatch } from "./types/repo";
 
 const STORAGE_KEY = "repofit-application-packet";
 
@@ -37,7 +38,6 @@ function loadSavedApplicationPacket(): ApplicationPacket | null {
 function saveApplicationPacket(packet: ApplicationPacket): boolean {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(packet));
-
         return true;
     } catch {
         return false;
@@ -46,7 +46,6 @@ function saveApplicationPacket(packet: ApplicationPacket): boolean {
 
 function App() {
     const [applicationPacket, setApplicationPacket] = useState<ApplicationPacket | null>(loadSavedApplicationPacket);
-
     const [jobPostingText, setJobPostingText] = useState(
         applicationPacket?.jobPostingText ?? "React와 테스트 코드 작성 경험 필수",
     );
@@ -54,7 +53,6 @@ function App() {
     const [jobTitle, setJobTitle] = useState(applicationPacket?.jobTitle ?? "프론트엔드 개발자");
     const [repoUrl, setRepoUrl] = useState(applicationPacket?.repoUrls[0] ?? "");
     const [notes, setNotes] = useState(applicationPacket?.notes ?? "");
-
     const [matches, setMatches] = useState<SkillMatch[]>([]);
     const [validationMessage, setValidationMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -110,13 +108,9 @@ function App() {
                 readmeText ?? "",
                 fetchedPackageInfo ?? EMPTY_PACKAGE_INFO,
             );
-
             const requirements = extractJobSkillRequirements(trimmedJobPostingText);
-
             const nextMatches = matchJobRequirementsToRepoEvidence(requirements, evidence);
-
             const remediationTasks = buildRemediationTasksFromMatches(nextMatches);
-
             const normalizedRepoUrl = `https://github.com/${parsedRepo.fullName}`;
 
             const packet = buildApplicationPacket(
@@ -131,16 +125,9 @@ function App() {
             setMatches(nextMatches);
             setApplicationPacket(packet);
 
-            const isSaved = saveApplicationPacket(packet);
-
-            if (!isSaved) {
+            if (!saveApplicationPacket(packet)) {
                 setValidationMessage("패킷은 생성됐지만 브라우저 저장에 실패했습니다.");
             }
-
-            console.log("실제 저장소 정보:", fetchedRepoSummary);
-            console.log("실제 README:", readmeText);
-            console.log("실제 package.json 정보:", fetchedPackageInfo);
-            console.log("생성된 패킷:", packet);
         } catch {
             setValidationMessage("저장소를 분석하는 중 오류가 발생했습니다.");
         } finally {
@@ -182,11 +169,17 @@ function App() {
 
         setApplicationPacket(updatedPacket);
 
-        const isSaved = saveApplicationPacket(updatedPacket);
-
-        if (!isSaved) {
+        if (!saveApplicationPacket(updatedPacket)) {
             setValidationMessage("완료 상태는 변경됐지만 브라우저 저장에 실패했습니다.");
         }
+    }
+
+    function handleDownloadMarkdown() {
+        if (applicationPacket === null) {
+            return;
+        }
+
+        downloadApplicationPacketMarkdown(applicationPacket);
     }
 
     return (
@@ -232,7 +225,13 @@ function App() {
             {validationMessage && <p role="status">{validationMessage}</p>}
 
             {applicationPacket && (
-                <ApplicationPacketResult packet={applicationPacket} onCompleteTask={handleCompleteTask} />
+                <>
+                    <ApplicationPacketResult packet={applicationPacket} onCompleteTask={handleCompleteTask} />
+
+                    <button type="button" onClick={handleDownloadMarkdown}>
+                        Markdown 내보내기
+                    </button>
+                </>
             )}
 
             {matches.length > 0 && (

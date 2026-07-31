@@ -174,6 +174,24 @@ function App() {
         }
     }
 
+    function handleChangePacketStatus(nextStatus: ApplicationPacket["status"]) {
+        if (applicationPacket === null) {
+            return;
+        }
+
+        const updatedPacket: ApplicationPacket = {
+            ...applicationPacket,
+            status: nextStatus,
+            updatedAt: new Date().toISOString(),
+        };
+
+        setApplicationPacket(updatedPacket);
+
+        if (!saveApplicationPacket(updatedPacket)) {
+            setValidationMessage("패킷 상태는 변경됐지만 브라우저 저장에 실패했습니다.");
+        }
+    }
+
     function handleDownloadMarkdown() {
         if (applicationPacket === null) {
             return;
@@ -225,7 +243,11 @@ function App() {
 
             {applicationPacket && (
                 <>
-                    <ApplicationPacketResult packet={applicationPacket} onToggleTask={handleToggleTask} />
+                    <ApplicationPacketResult
+                        packet={applicationPacket}
+                        onToggleTask={handleToggleTask}
+                        onStatusChange={handleChangePacketStatus}
+                    />
 
                     <button type="button" onClick={handleDownloadMarkdown}>
                         Markdown 내보내기

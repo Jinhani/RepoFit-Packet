@@ -3,6 +3,7 @@ import type { ApplicationPacket } from "../../types/packet";
 type ApplicationPacketResultProps = {
     packet: ApplicationPacket;
     onToggleTask: (taskId: string) => void;
+    onStatusChange: (status: ApplicationPacket["status"]) => void;
 };
 
 export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
@@ -12,7 +13,17 @@ export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
 
             <p>회사명: {props.packet.companyName}</p>
             <p>직무명: {props.packet.jobTitle}</p>
-            <p>상태: {props.packet.status}</p>
+            <label htmlFor="packet-status">상태</label>
+            <select
+                id="packet-status"
+                value={props.packet.status}
+                onChange={(event) => props.onStatusChange(event.target.value as ApplicationPacket["status"])}
+            >
+                <option value="draft">초안</option>
+                <option value="reviewing">검토 중</option>
+                <option value="ready">지원 준비 완료</option>
+                <option value="sent">지원 완료</option>
+            </select>
             <p>공고 내용: {props.packet.jobPostingText}</p>
 
             {props.packet.notes !== "" && <p>지원 메모: {props.packet.notes}</p>}

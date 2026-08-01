@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import "./App.css";
 import { ApplicationPacketResult } from "./features/packets/ApplicationPacketResult";
 import { buildApplicationPacket } from "./features/packets/buildApplicationPacket";
 import { downloadApplicationPacketMarkdown } from "./features/packets/downloadApplicationPacketMarkdown";
@@ -200,10 +201,10 @@ function App() {
         downloadApplicationPacketMarkdown(applicationPacket);
     }
     return (
-        <div>
+        <div className="app-shell">
             <h1>RepoFit Packet</h1>
 
-            <form onSubmit={handleBuildPacket} aria-busy={isLoading}>
+            <form className="packet-form" onSubmit={handleBuildPacket} aria-busy={isLoading}>
                 <label htmlFor="job-title">직무명</label>
                 <input id="job-title" value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} />
 
@@ -229,14 +230,15 @@ function App() {
 
                 <label htmlFor="packet-notes">지원 메모</label>
                 <textarea id="packet-notes" rows={4} value={notes} onChange={(event) => setNotes(event.target.value)} />
-
-                <button type="submit" disabled={isLoading}>
-                    {isLoading ? "저장소 분석 중..." : "패킷 생성"}
-                </button>
-
-                <button type="button" disabled={isLoading} onClick={handleClearPacket}>
-                    패킷 삭제
-                </button>
+                <div className="form-actions">
+                    {" "}
+                    <button type="submit" disabled={isLoading}>
+                        {isLoading ? "저장소 분석 중..." : "패킷 생성"}
+                    </button>
+                    <button type="button" disabled={isLoading} onClick={handleClearPacket}>
+                        패킷 삭제
+                    </button>
+                </div>
             </form>
 
             {validationMessage && <p role="status">{validationMessage}</p>}
@@ -249,21 +251,33 @@ function App() {
                         onStatusChange={handleChangePacketStatus}
                     />
 
-                    <button type="button" onClick={handleDownloadMarkdown}>
+                    <button className="export-button" type="button" onClick={handleDownloadMarkdown}>
                         Markdown 내보내기
                     </button>
                 </>
             )}
 
             {matches.length > 0 && (
-                <ul>
-                    {matches.map((match) => (
-                        <li key={match.requirement.skill}>
-                            {match.requirement.skill} - {match.status}
-                            {match.status === "missing" ? " / 보완 필요" : ""}
-                        </li>
-                    ))}
-                </ul>
+                <section className="match-summary">
+                    <h2>기술 매칭 결과</h2>
+
+                    <ul className="match-list">
+                        {matches.map((match) => (
+                            <li
+                                key={match.requirement.skill}
+                                className={
+                                    match.status === "missing"
+                                        ? "match-item match-item--missing"
+                                        : "match-item match-item--matched"
+                                }
+                            >
+                                <span>{match.requirement.skill}</span>
+
+                                <strong>{match.status === "missing" ? "보완 필요" : "충족"}</strong>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
             )}
         </div>
     );

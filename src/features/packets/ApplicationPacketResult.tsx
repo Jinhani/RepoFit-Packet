@@ -8,7 +8,7 @@ type ApplicationPacketResultProps = {
 
 export function ApplicationPacketResult(props: ApplicationPacketResultProps) {
     return (
-        <section>
+        <section className="packet-result">
             <h2>생성된 패킷</h2>
 
             <p>회사명: {props.packet.companyName}</p>

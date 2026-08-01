@@ -12,6 +12,7 @@ const todoPacket: ApplicationPacket = {
     attachments: [],
     notes: "",
     checkItems: [],
+    skillMatches: [],
     remediationTasks: [
         {
             id: "task-1",

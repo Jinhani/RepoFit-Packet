@@ -12,7 +12,7 @@ import { fetchGitHubRepoSummary } from "./features/repos/fetchGitHubRepoSummary"
 import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobRequirementsToRepoEvidence";
 import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
 import type { ApplicationPacket } from "./types/packet";
-import type { PackageJsonInfo, SkillMatch } from "./types/repo";
+import type { PackageJsonInfo } from "./types/repo";
 
 const STORAGE_KEY = "repofit-application-packet";
 
@@ -30,7 +30,12 @@ function loadSavedApplicationPacket(): ApplicationPacket | null {
             return null;
         }
 
-        return JSON.parse(savedPacket) as ApplicationPacket;
+        const parsedPacket = JSON.parse(savedPacket) as ApplicationPacket;
+
+        return {
+            ...parsedPacket,
+            skillMatches: parsedPacket.skillMatches ?? [],
+        };
     } catch {
         return null;
     }
@@ -54,7 +59,7 @@ function App() {
     const [jobTitle, setJobTitle] = useState(applicationPacket?.jobTitle ?? "프론트엔드 개발자");
     const [repoUrl, setRepoUrl] = useState(applicationPacket?.repoUrls[0] ?? "");
     const [notes, setNotes] = useState(applicationPacket?.notes ?? "");
-    const [matches, setMatches] = useState<SkillMatch[]>([]);
+
     const [validationMessage, setValidationMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -121,9 +126,9 @@ function App() {
                 [normalizedRepoUrl],
                 trimmedNotes,
                 remediationTasks,
+                nextMatches,
             );
 
-            setMatches(nextMatches);
             setApplicationPacket(packet);
 
             if (!saveApplicationPacket(packet)) {
@@ -138,7 +143,6 @@ function App() {
 
     function handleClearPacket() {
         setApplicationPacket(null);
-        setMatches([]);
         setValidationMessage("");
 
         try {
@@ -231,7 +235,6 @@ function App() {
                 <label htmlFor="packet-notes">지원 메모</label>
                 <textarea id="packet-notes" rows={4} value={notes} onChange={(event) => setNotes(event.target.value)} />
                 <div className="form-actions">
-                    {" "}
                     <button type="submit" disabled={isLoading}>
                         {isLoading ? "저장소 분석 중..." : "패킷 생성"}
                     </button>
@@ -257,12 +260,12 @@ function App() {
                 </>
             )}
 
-            {matches.length > 0 && (
+            {applicationPacket && applicationPacket.skillMatches.length > 0 && (
                 <section className="match-summary">
                     <h2>기술 매칭 결과</h2>
 
                     <ul className="match-list">
-                        {matches.map((match) => (
+                        {applicationPacket.skillMatches.map((match) => (
                             <li
                                 key={match.requirement.skill}
                                 className={

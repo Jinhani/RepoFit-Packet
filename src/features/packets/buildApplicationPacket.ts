@@ -1,4 +1,5 @@
 import type { ApplicationPacket, RemediationTask } from "../../types/packet";
+import type { SkillMatch } from "../../types/repo";
 
 export function buildApplicationPacket(
     companyName: string,
@@ -7,6 +8,7 @@ export function buildApplicationPacket(
     repoUrls: string[],
     notes: string,
     remediationTasks: RemediationTask[],
+    skillMatches: SkillMatch[],
 ): ApplicationPacket {
     const now = new Date().toISOString();
 
@@ -21,6 +23,7 @@ export function buildApplicationPacket(
         notes,
         checkItems: [],
         remediationTasks,
+        skillMatches,
         createdAt: now,
         updatedAt: now,
     };

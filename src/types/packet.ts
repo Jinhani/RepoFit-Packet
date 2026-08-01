@@ -1,3 +1,5 @@
+import type { SkillMatch } from "./repo";
+
 export type PacketStatus = "draft" | "reviewing" | "ready" | "sent";
 
 // 한 회사 공고에 지원하기 위한 자료, 저장소, 메모, 보완 작업을 묶은 단위
@@ -6,8 +8,8 @@ export type ApplicationPacket = {
     id: string;
     // 지원할 회사 이름
     companyName: string;
-    jobTitle: string;
     // 지원할 포지션 이름
+    jobTitle: string;
     jobPostingUrl?: string;
     jobPostingText: string;
     status: PacketStatus;
@@ -16,6 +18,7 @@ export type ApplicationPacket = {
     notes: string;
     checkItems: PacketCheckItem[];
     remediationTasks: RemediationTask[];
+    skillMatches: SkillMatch[];
     createdAt: string;
     updatedAt: string;
 };

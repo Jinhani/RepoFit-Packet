@@ -5,7 +5,22 @@ export function buildApplicationPacketMarkdown(packet: ApplicationPacket): strin
         packet.repoUrls.length === 0 ? "- 없음" : packet.repoUrls.map((repoUrl) => `- ${repoUrl}`).join("\n");
 
     const notesSection = packet.notes.trim() === "" ? "작성된 메모가 없습니다." : packet.notes;
+    const skillMatchSection =
+        packet.skillMatches.length === 0
+            ? "- 분석 결과 없음"
+            : packet.skillMatches
+                  .map((match) => {
+                      let result = "보완 필요";
 
+                      if (match.status === "matched") {
+                          result = "충족";
+                      } else if (match.status === "partial") {
+                          result = "부분 충족";
+                      }
+
+                      return `- ${match.requirement.skill}: ${result}`;
+                  })
+                  .join("\n");
     const taskSection =
         packet.remediationTasks.length === 0
             ? "- 보완 작업 없음"
@@ -42,6 +57,10 @@ ${repoSection}
 ## 지원 메모
 
 ${notesSection}
+
+## 기술 매칭 결과
+
+${skillMatchSection}
 
 ## 보완 작업
 

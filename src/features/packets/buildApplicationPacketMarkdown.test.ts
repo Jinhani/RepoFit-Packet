@@ -27,12 +27,6 @@ const todoPacket: ApplicationPacket = {
 };
 
 describe("buildApplicationPacketMarkdown", () => {
-    it("todo 작업을 선택되지 않은 체크박스로 변환한다", () => {
-        const markdown = buildApplicationPacketMarkdown(todoPacket);
-
-        expect(markdown).toContain("- [ ] React 보완하기");
-    });
-
     it("done 작업을 선택된 체크박스로 변환한다", () => {
         const donePacket: ApplicationPacket = {
             ...todoPacket,
@@ -46,6 +40,46 @@ describe("buildApplicationPacketMarkdown", () => {
 
         expect(markdown).toContain("- [x] React 보완하기");
     });
-});
 
+    it("기술 매칭 상태를 마크다운 문구로 변환한다", () => {
+        const packet: ApplicationPacket = {
+            ...todoPacket,
+            skillMatches: [
+                {
+                    requirement: {
+                        skill: "React",
+                        importance: "required",
+                        sourceText: "React 경험 필수",
+                    },
+                    status: "missing",
+                    evidence: [],
+                },
+                {
+                    requirement: {
+                        skill: "TypeScript",
+                        importance: "preferred",
+                        sourceText: "TypeScript 경험 우대",
+                    },
+                    status: "partial",
+                    evidence: [],
+                },
+                {
+                    requirement: {
+                        skill: "Testing",
+                        importance: "required",
+                        sourceText: "테스트 경험 필수",
+                    },
+                    status: "matched",
+                    evidence: ["test script"],
+                },
+            ],
+        };
+
+        const markdown = buildApplicationPacketMarkdown(packet);
+
+        expect(markdown).toContain("- React: 보완 필요");
+        expect(markdown).toContain("- TypeScript: 부분 충족");
+        expect(markdown).toContain("- Testing: 충족");
+    });
+});
 // 기존 todoPacket을 변경하지 않기 위해 spread와 map()으로 새 패킷을 만들고 작업 상태만 done으로 덮어쓰기

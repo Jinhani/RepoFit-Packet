@@ -3,6 +3,13 @@ package com.jinhani.repofit.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+
+
+
+
+
+
+ 
 public record CreatePacketRequest(
 
     @NotBlank(message = "회사명은 필수입니다.")

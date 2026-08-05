@@ -59,7 +59,7 @@ backend : 메인 클래스는 요청을 직접 처리하는 곳이 아니라 Spr
 - `health()`가 반환한 Java `Map`은 Spring에 의해 JSON으로 변환된다.
 - `Map.of()`의 항목 순서는 보장되지 않으며 JSON 객체도 필드 순서가 중요하지 않다.
 
-````text
+```text
 GET /api/health
 → HealthController의 health() 실행
 → Java Map 반환
@@ -67,12 +67,26 @@ GET /api/health
 → 브라우저에 응답
 ### 현재 확인한 요청 흐름
 
-```text
-POST 요청
-→ JSON을 CreatePacketRequest DTO로 변환
-→ @Valid가 @NotBlank와 @Size 규칙 검사
-→ 성공: Controller 메서드 실행 후 JSON 응답
-→ 실패: Controller 메서드를 실행하지 않고 400 응답
-````
+- `@RequestBody`가 요청 JSON을 DTO로 변환하고, `@Valid`가 DTO의 검증 규칙을 실행하는 것을 확인했다.
+- 공백뿐인 회사명은 `@NotBlank`에 의해 400으로 거절됐다.
+- 100자를 초과한 회사명은 `@Size(max = 100)`에 의해 400으로 거절됐다.
 
 - 기존 `health()` 구조를 참고해 `GET /api/version` API를 직접 추가하고, Java `Map`이 JSON 응답으로 변환되는 것을 확인했다.
+```
+
+## Controller와 Service 분리
+
+- Controller는 HTTP 요청을 받고, 실제 처리 작업을 `PacketService`에 전달하도록 분리했다.
+- `@Service`는 해당 클래스를 Spring이 관리하는 Service로 등록한다.
+- Controller는 생성자를 통해 Spring이 준비한 `PacketService`를 전달받는다.
+- `createPreview()`에서 `trim()`을 사용해 회사명과 채용공고의 앞뒤 공백을 제거했다.
+- 공백이 제거된 JSON 응답을 확인하여 Controller에서 Service가 실제로 호출되는 것을 확인했다.
+
+```text
+POST 요청
+→ Controller
+→ Service
+→ 공백 제거
+→ DTO 반환
+→ JSON 응답
+```

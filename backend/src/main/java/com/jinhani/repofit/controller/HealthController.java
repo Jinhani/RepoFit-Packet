@@ -15,4 +15,14 @@ public class HealthController {
             "message", "RepoFit backend is running"
         );
     }
+
+    @GetMapping("/api/version")
+    public Map<String, String> version () {
+
+return Map.of(
+    "name", "RepoFit Packet",
+    "version", "0.1"
+);
+
+    }
 }

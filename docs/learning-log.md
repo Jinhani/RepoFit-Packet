@@ -74,3 +74,5 @@ POST 요청
 → 성공: Controller 메서드 실행 후 JSON 응답
 → 실패: Controller 메서드를 실행하지 않고 400 응답
 ````
+
+- 기존 `health()` 구조를 참고해 `GET /api/version` API를 직접 추가하고, Java `Map`이 JSON 응답으로 변환되는 것을 확인했다.

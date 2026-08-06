@@ -82,6 +82,12 @@ GET /api/health
 - `createPreview()`에서 `trim()`을 사용해 회사명과 채용공고의 앞뒤 공백을 제거했다.
 - 공백이 제거된 JSON 응답을 확인하여 Controller에서 Service가 실제로 호출되는 것을 확인했다.
 
+## 요청 DTO와 응답 DTO
+
+- 요청용 `CreatePacketRequest`와 응답용 `CreatePacketPreviewResponse`를 분리했다.
+- Service에서 정리한 문자열과 `length()`로 계산한 공고 글자 수를 응답 DTO에 담았다.
+- Java 메서드의 반환 타입은 실제로 반환하는 객체 타입과 일치해야 한다.
+
 ```text
 POST 요청
 → Controller

@@ -29,3 +29,5 @@ public record CreatePacketRequest(
 // String jobPostingText
 
 // 이 DTO는 문자열 두 개를 가진다.
+
+//입력

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jinhani.repofit.dto.CreatePacketRequest;
 import com.jinhani.repofit.service.PacketService;
+import com.jinhani.repofit.dto.CreatePacketPreviewResponse;
 
 @RestController //// HTTP 요청을 처리하고 반환값을 응답 본문으로 보냄
 
@@ -20,7 +21,7 @@ public class PacketController {
     }
 
     @PostMapping("/api/packets/preview")
-    public CreatePacketRequest preview(
+    public CreatePacketPreviewResponse preview(
         @Valid @RequestBody CreatePacketRequest request
     ) {
         return packetService.createPreview(request);

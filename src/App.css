@@ -229,9 +229,9 @@
     .packet-form {
         padding: 18px;
     }
-}
-.match-item {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
+    .match-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
 }

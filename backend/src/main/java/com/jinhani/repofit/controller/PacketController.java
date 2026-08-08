@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jinhani.repofit.dto.CreatePacketRequest;
 import com.jinhani.repofit.service.PacketService;
 import com.jinhani.repofit.dto.CreatePacketPreviewResponse;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController //// HTTP 요청을 처리하고 반환값을 응답 본문으로 보냄
+@CrossOrigin(origins = "http://localhost:5173")
 
 public class PacketController {
 

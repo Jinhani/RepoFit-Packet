@@ -13,6 +13,7 @@ import { matchJobRequirementsToRepoEvidence } from "./features/repos/matchJobReq
 import { parseGitHubRepoUrl } from "./features/repos/parseGitHubRepoUrl";
 import type { ApplicationPacket } from "./types/packet";
 import type { PackageJsonInfo } from "./types/repo";
+import { createPacketPreview, type CreatePacketPreviewResponse } from "./api/packetApi";
 
 const STORAGE_KEY = "repofit-application-packet";
 
@@ -63,6 +64,8 @@ function App() {
     const [validationMessage, setValidationMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    const [previewResult, setPreviewResult] = useState<CreatePacketPreviewResponse | null>(null);
+
     async function handleBuildPacket(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -97,6 +100,13 @@ function App() {
         setValidationMessage("");
 
         try {
+            const preview = await createPacketPreview({
+                companyName: trimmedCompanyName,
+                jobPostingText: trimmedJobPostingText,
+            });
+
+            setPreviewResult(preview);
+
             const fetchedRepoSummary = await fetchGitHubRepoSummary(parsedRepo.owner, parsedRepo.repo);
 
             if (fetchedRepoSummary === null) {
@@ -144,6 +154,7 @@ function App() {
     function handleClearPacket() {
         setApplicationPacket(null);
         setValidationMessage("");
+        setPreviewResult(null);
 
         try {
             localStorage.removeItem(STORAGE_KEY);
@@ -245,7 +256,13 @@ function App() {
             </form>
 
             {validationMessage && <p role="status">{validationMessage}</p>}
-
+            {previewResult && (
+                <p role="status">
+                    백엔드 연결 확인: {previewResult.companyName}
+                    {" / "}
+                    채용공고 {previewResult.jobPostingLength}자
+                </p>
+            )}
             {applicationPacket && (
                 <>
                     <ApplicationPacketResult

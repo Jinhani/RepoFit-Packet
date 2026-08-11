@@ -98,7 +98,9 @@ function App() {
 
         setIsLoading(true);
         setValidationMessage("");
+        setPreviewResult(null);
 
+        // 1. Spring 백엔드 요청
         try {
             const preview = await createPacketPreview({
                 companyName: trimmedCompanyName,
@@ -106,7 +108,14 @@ function App() {
             });
 
             setPreviewResult(preview);
+        } catch {
+            setValidationMessage("백엔드 연결 중 오류가 발생했습니다.");
+            setIsLoading(false);
+            return;
+        }
 
+        // 2. GitHub 저장소 분석
+        try {
             const fetchedRepoSummary = await fetchGitHubRepoSummary(parsedRepo.owner, parsedRepo.repo);
 
             if (fetchedRepoSummary === null) {
@@ -124,6 +133,7 @@ function App() {
                 readmeText ?? "",
                 fetchedPackageInfo ?? EMPTY_PACKAGE_INFO,
             );
+
             const requirements = extractJobSkillRequirements(trimmedJobPostingText);
             const nextMatches = matchJobRequirementsToRepoEvidence(requirements, evidence);
             const remediationTasks = buildRemediationTasksFromMatches(nextMatches);

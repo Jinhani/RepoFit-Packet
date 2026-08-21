@@ -1,6 +1,8 @@
 package com.jinhani.repofit.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.jinhani.repofit.dto.CreatePacketPreviewResponse;
 import com.jinhani.repofit.dto.CreatePacketRequest;
@@ -47,6 +49,21 @@ public class PacketService {
             savedPacket.getId(),
             savedPacket.getCompanyName(),
             savedPacket.getJobPostingText()
+        );
+    }
+
+    // id로 패킷 1개 조회
+    public CreatePacketResponse findById(Long id) {
+        PacketEntity packet = packetRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "패킷을 찾을 수 없습니다."
+            ));
+
+        return new CreatePacketResponse(
+            packet.getId(),
+            packet.getCompanyName(),
+            packet.getJobPostingText()
         );
     }
 }

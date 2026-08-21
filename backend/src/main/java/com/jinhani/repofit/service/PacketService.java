@@ -1,5 +1,7 @@
 package com.jinhani.repofit.service;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,17 @@ public class PacketService {
         );
     }
 
+    public List<CreatePacketResponse> findAll() {
+        return packetRepository.findAll()
+            .stream()
+            .map(packet -> new CreatePacketResponse(
+                packet.getId(),
+                packet.getCompanyName(),
+                packet.getJobPostingText()
+            ))
+            .toList();
+    }
+
     public CreatePacketResponse findById(Long id) {
         PacketEntity packet = packetRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
@@ -63,6 +76,33 @@ public class PacketService {
             packet.getId(),
             packet.getCompanyName(),
             packet.getJobPostingText()
+        );
+    }
+
+    public CreatePacketResponse updateById(
+        Long id,
+        CreatePacketRequest request
+    ) {
+        PacketEntity packet = packetRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "패킷을 찾을 수 없습니다."
+            ));
+
+        String companyName = request.companyName().trim();
+        String jobPostingText = request.jobPostingText().trim();
+
+        packet.update(
+            companyName,
+            jobPostingText
+        );
+
+        PacketEntity savedPacket = packetRepository.save(packet);
+
+        return new CreatePacketResponse(
+            savedPacket.getId(),
+            savedPacket.getCompanyName(),
+            savedPacket.getJobPostingText()
         );
     }
 

@@ -1,5 +1,7 @@
 package com.jinhani.repofit.controller;
 
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +28,6 @@ public class PacketController {
         this.packetService = packetService;
     }
 
-    // DB 저장 없이 미리보기
     @PostMapping("/api/packets/preview")
     public CreatePacketPreviewResponse preview(
         @Valid @RequestBody CreatePacketRequest request
@@ -33,7 +35,6 @@ public class PacketController {
         return packetService.createPreview(request);
     }
 
-    // 패킷 저장
     @PostMapping("/api/packets")
     public CreatePacketResponse create(
         @Valid @RequestBody CreatePacketRequest request
@@ -41,7 +42,11 @@ public class PacketController {
         return packetService.create(request);
     }
 
-    // 패킷 1개 조회
+    @GetMapping("/api/packets")
+    public List<CreatePacketResponse> findAll() {
+        return packetService.findAll();
+    }
+
     @GetMapping("/api/packets/{id}")
     public CreatePacketResponse findById(
         @PathVariable Long id
@@ -49,7 +54,14 @@ public class PacketController {
         return packetService.findById(id);
     }
 
-    // 패킷 1개 삭제
+    @PutMapping("/api/packets/{id}")
+    public CreatePacketResponse updateById(
+        @PathVariable Long id,
+        @Valid @RequestBody CreatePacketRequest request
+    ) {
+        return packetService.updateById(id, request);
+    }
+
     @DeleteMapping("/api/packets/{id}")
     public void deleteById(
         @PathVariable Long id

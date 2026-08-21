@@ -41,4 +41,12 @@ public class PacketEntity {
     public String getJobPostingText() {
         return jobPostingText;
     }
+
+    public void update(
+        String companyName,
+        String jobPostingText
+    ) {
+        this.companyName = companyName;
+        this.jobPostingText = jobPostingText;
+    }
 }

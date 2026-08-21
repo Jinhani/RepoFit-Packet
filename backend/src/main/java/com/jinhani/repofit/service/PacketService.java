@@ -52,7 +52,6 @@ public class PacketService {
         );
     }
 
-    // id로 패킷 1개 조회
     public CreatePacketResponse findById(Long id) {
         PacketEntity packet = packetRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
@@ -65,5 +64,15 @@ public class PacketService {
             packet.getCompanyName(),
             packet.getJobPostingText()
         );
+    }
+
+    public void deleteById(Long id) {
+        PacketEntity packet = packetRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "패킷을 찾을 수 없습니다."
+            ));
+
+        packetRepository.delete(packet);
     }
 }
